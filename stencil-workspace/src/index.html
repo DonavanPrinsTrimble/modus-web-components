@@ -29,57 +29,60 @@
   </head>
 
   <body>
-    <div class="flex-column">
-       <div class="flex-row">
-          <modus-button color="primary" left-icon="add" >Primary</modus-button>
-          <modus-button color="secondary"  right-icon="add">Secondary</modus-button>
-          <modus-button left-icon="add" color="tertiary"  right-icon="add">Tertiary</modus-button>
-          <modus-button left-icon="add" color="danger"  right-icon="add">Tertiary</modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button size="small" color="primary" left-icon="add" >Primary</modus-button>
-          <modus-button size="small" color="secondary"  right-icon="add">Secondary</modus-button>
-          <modus-button size="small" left-icon="add" color="tertiary"  right-icon="add">Tertiary</modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button size="large" color="primary" left-icon="add" >Primary</modus-button>
-          <modus-button size="large" color="secondary"  right-icon="add">Secondary</modus-button>
-          <modus-button size="large" left-icon="add" color="tertiary"  right-icon="add">Tertiary</modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button left-icon="add"  button-style="borderless">Borderless</modus-button>
-          <modus-button right-icon="add" button-style="borderless">Borderless</modus-button>
-          <modus-button left-icon="add" right-icon="add" button-style="borderless">Borderless</modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button left-icon="add" button-style="outline" color="primary">Outline</modus-button>
-          <modus-button right-icon="add" button-style="outline" color="secondary">Outline</modus-button>
-          <modus-button left-icon="add" right-icon="add" button-style="outline" color="secondary">Outline</modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button color="primary" icon-only="add" ></modus-button>
-          <modus-button color="secondary" icon-only="add" ></modus-button>
-          <modus-button color="tertiary" icon-only="add" ></modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button color="primary" size="small" icon-only="add" ></modus-button>
-          <modus-button color="secondary" size="small" icon-only="add" ></modus-button>
-          <modus-button color="tertiary" size="small" icon-only="add" ></modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button color="primary" size="large" icon-only="add" ></modus-button>
-          <modus-button color="secondary" size="large" icon-only="add" ></modus-button>
-          <modus-button color="tertiary" size="large" icon-only="add" ></modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button button-style="outline" color="primary" icon-only="notifications"></modus-button>
-          <modus-button button-style="outline" color="secondary" icon-only="notifications"></modus-button>
-       </div>
-       <div class="flex-row">
-          <modus-button button-style="borderless" color="primary" icon-only="notifications"></modus-button>
-          <modus-button button-style="borderless" color="secondary" icon-only="notifications"></modus-button>
-          <modus-button button-style="borderless" color="tertiary" icon-only="notifications"></modus-button>
-       </div>
-    </div>
+    <modus-navbar
+  id="working"
+  show-apps-menu
+  show-help
+  show-main-menu>
+  <div slot="main" style="height:300px;">Render your own main menu.</div>
+  <div slot="addMenu">Render your own add menu.</div>
+  <div slot="notificationMenu">Render your own notification menu.</div>
+</modus-navbar>
+
+<script>
+  const element = document.querySelector('modus-navbar');
+  element.apps = [
+    {
+      description: [
+        {
+          description: 'The One Trimble Design System',
+          logoUrl: 'https://modus.trimble.com/favicon.svg',
+          name: 'Trimble Modus',
+          url: 'https://modus.trimble.com/',
+        },
+      ],
+      logoUrl: '',
+      name: '',
+      url: ''
+    },
+  ];
+  element.logoOptions = {
+    primary: {
+      url: 'https://modus-bootstrap.trimble.com/img/trimble-logo-rev.svg',
+      height: 24,
+    },
+    secondary: { url: 'https://modus.trimble.com/favicon.svg', height: 24 },
+  };
+  element.profileMenuOptions = {
+    avatarUrl: '...',
+    email: 'modus_user@trimble.com',
+    initials: 'MU',
+    username: 'Modus User',
+  };
+  element.buttons = [
+    { id:'addMenu', icon: 'add' },
+    { id: 'notificationMenu', icon: 'notifications' }
+  ];
+
+  setTimeout(()=> {
+    element.profileMenuOptions = {
+    avatarUrl: '...',
+    email: 'modus_user@trimble.com',
+    initials: 'MU',
+    username: 'Modus User',
+    signOutLinkText: 'Test'
+  };
+  }, 3000)
+</script>
  </body>
 </html>

@@ -207,7 +207,8 @@ interface ModusProfileMenuOptions {
   initials?: string;
   links?: ModusNavbarProfileMenuLink[];
   username: string;
-  tooltip: ModusNavbarTooltip;
+  tooltip?: ModusNavbarTooltip;
+  signOutLinkText?: string;
 }
 
 interface ModusNavbarButton {

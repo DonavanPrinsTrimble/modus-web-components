@@ -669,6 +669,7 @@ export namespace Components {
         "initials": string;
         "links": ModusNavbarProfileMenuLink[];
         "reverse": boolean;
+        "signOutLinkText": string;
         "username": string;
         "variant": 'default' | 'blue';
     }
@@ -2408,6 +2409,7 @@ declare namespace LocalJSX {
         "onLinkClick"?: (event: ModusNavbarProfileMenuCustomEvent<string>) => void;
         "onSignOutClick"?: (event: ModusNavbarProfileMenuCustomEvent<MouseEvent>) => void;
         "reverse"?: boolean;
+        "signOutLinkText"?: string;
         "username"?: string;
         "variant"?: 'default' | 'blue';
     }

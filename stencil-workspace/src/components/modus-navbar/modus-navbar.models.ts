@@ -13,6 +13,7 @@ export interface ModusProfileMenuOptions {
   links?: ModusNavbarProfileMenuLink[];
   username: string;
   tooltip?: ModusNavbarTooltip;
+  signOutLinkText?: string;
 }
 export interface ModusNavbarLogo {
   url: string;

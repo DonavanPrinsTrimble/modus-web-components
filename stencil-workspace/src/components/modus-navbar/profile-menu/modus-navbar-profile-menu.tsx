@@ -13,6 +13,7 @@ export class ModusNavbarProfileMenu {
   @Prop() links: ModusNavbarProfileMenuLink[];
   @Prop() reverse: boolean;
   @Prop() username: string;
+  @Prop() signOutLinkText: string;
   @Prop() variant: 'default' | 'blue' = 'default';
 
   @Event() linkClick: EventEmitter<string>;
@@ -47,7 +48,7 @@ export class ModusNavbarProfileMenu {
           </div>
         ) : null}
         <div class="sign-out" onClick={() => this.signOutClick.emit()}>
-          <div>Sign out</div>
+          <div>{this.signOutLinkText || 'Sign out'}</div>
         </div>
       </div>
     );
