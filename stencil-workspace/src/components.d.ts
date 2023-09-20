@@ -14,8 +14,8 @@ import { ModusNavbarButton, ModusNavbarLogoOptions, ModusNavbarProfileMenuLink, 
 import { ModusNavbarApp as ModusNavbarApp1 } from "./components/modus-navbar/apps-menu/modus-navbar-apps-menu";
 import { RadioButton } from "./components/modus-radio-group/modus-radio-button";
 import { ModusSideNavigationItemInfo } from "./components/modus-side-navigation/modus-side-navigation.models";
-import { ModusTableCellLink, ModusTableColumn, ModusTableColumnsVisibilityOptions, ModusTableDisplayOptions, ModusTableRowSelectionOptions, ModusTableSortingState, ModusTableToolbarOptions } from "./components/modus-table/models/modus-table.models";
-import { Column, Table } from "@tanstack/table-core";
+import { ModusTableCellEditorArgs, ModusTableCellLink, ModusTableColumn, ModusTableColumnOrderState, ModusTableColumnSizingState, ModusTableColumnsVisibilityOptions, ModusTableColumnVisibilityState, ModusTableDataUpdaterProps, ModusTableDisplayOptions, ModusTableExpandedState, ModusTablePaginationState, ModusTableRowSelectionOptions, ModusTableSortingState, ModusTableToolbarOptions } from "./components/modus-table/models/modus-table.models";
+import { Cell, Column, Table } from "@tanstack/table-core";
 import { Tab } from "./components/modus-tabs/modus-tabs";
 import { ModusTimePickerEventDetails } from "./components/modus-time-picker/modus-time-picker.models";
 import { TreeViewItemOptions } from "./components/modus-content-tree/modus-content-tree.types";
@@ -28,8 +28,8 @@ export { ModusNavbarButton, ModusNavbarLogoOptions, ModusNavbarProfileMenuLink, 
 export { ModusNavbarApp as ModusNavbarApp1 } from "./components/modus-navbar/apps-menu/modus-navbar-apps-menu";
 export { RadioButton } from "./components/modus-radio-group/modus-radio-button";
 export { ModusSideNavigationItemInfo } from "./components/modus-side-navigation/modus-side-navigation.models";
-export { ModusTableCellLink, ModusTableColumn, ModusTableColumnsVisibilityOptions, ModusTableDisplayOptions, ModusTableRowSelectionOptions, ModusTableSortingState, ModusTableToolbarOptions } from "./components/modus-table/models/modus-table.models";
-export { Column, Table } from "@tanstack/table-core";
+export { ModusTableCellEditorArgs, ModusTableCellLink, ModusTableColumn, ModusTableColumnOrderState, ModusTableColumnSizingState, ModusTableColumnsVisibilityOptions, ModusTableColumnVisibilityState, ModusTableDataUpdaterProps, ModusTableDisplayOptions, ModusTableExpandedState, ModusTablePaginationState, ModusTableRowSelectionOptions, ModusTableSortingState, ModusTableToolbarOptions } from "./components/modus-table/models/modus-table.models";
+export { Cell, Column, Table } from "@tanstack/table-core";
 export { Tab } from "./components/modus-tabs/modus-tabs";
 export { ModusTimePickerEventDetails } from "./components/modus-time-picker/modus-time-picker.models";
 export { TreeViewItemOptions } from "./components/modus-content-tree/modus-content-tree.types";
@@ -710,6 +710,10 @@ export namespace Components {
          */
         "errorText": string;
         /**
+          * Focus the input.
+         */
+        "focusInput": () => Promise<void>;
+        /**
           * (optional) The input's helper text displayed below the input.
          */
         "helperText": string;
@@ -836,6 +840,10 @@ export namespace Components {
           * (optional) The input's error text.
          */
         "errorText": string;
+        /**
+          * Focus the input.
+         */
+        "focusInput": () => Promise<void>;
         /**
           * (optional) The input's helper text.
          */
@@ -1051,6 +1059,19 @@ export namespace Components {
          */
         "toolbarOptions": ModusTableToolbarOptions | null;
     }
+    interface ModusTableCellEditor {
+        "args": ModusTableCellEditorArgs;
+        "type": string;
+        "value": string;
+        "valueEntered": (newValue: string, oldValue: string) => void;
+    }
+    interface ModusTableCellMain {
+        "cell": Cell<unknown, unknown>;
+        "cellIndex": number;
+        "linkClick": (link: ModusTableCellLink) => void;
+        "rowActions": RowActions;
+        "valueChange": (props: ModusTableDataUpdaterProps) => void;
+    }
     interface ModusTableColumnsVisibility {
         /**
           * Column visibility options
@@ -1079,8 +1100,8 @@ export namespace Components {
      */
     interface ModusTableFillerColumn {
         "cellBorderless": boolean;
+        "container"?: HTMLElement;
         "summaryRow": boolean;
-        "targetTable"?: HTMLTableElement;
     }
     interface ModusTableToolbar {
         /**
@@ -1733,6 +1754,18 @@ declare global {
         prototype: HTMLModusTableElement;
         new (): HTMLModusTableElement;
     };
+    interface HTMLModusTableCellEditorElement extends Components.ModusTableCellEditor, HTMLStencilElement {
+    }
+    var HTMLModusTableCellEditorElement: {
+        prototype: HTMLModusTableCellEditorElement;
+        new (): HTMLModusTableCellEditorElement;
+    };
+    interface HTMLModusTableCellMainElement extends Components.ModusTableCellMain, HTMLStencilElement {
+    }
+    var HTMLModusTableCellMainElement: {
+        prototype: HTMLModusTableCellMainElement;
+        new (): HTMLModusTableCellMainElement;
+    };
     interface HTMLModusTableColumnsVisibilityElement extends Components.ModusTableColumnsVisibility, HTMLStencilElement {
     }
     var HTMLModusTableColumnsVisibilityElement: {
@@ -1841,6 +1874,8 @@ declare global {
         "modus-spinner": HTMLModusSpinnerElement;
         "modus-switch": HTMLModusSwitchElement;
         "modus-table": HTMLModusTableElement;
+        "modus-table-cell-editor": HTMLModusTableCellEditorElement;
+        "modus-table-cell-main": HTMLModusTableCellMainElement;
         "modus-table-columns-visibility": HTMLModusTableColumnsVisibilityElement;
         "modus-table-dropdown-menu": HTMLModusTableDropdownMenuElement;
         "modus-table-filler-column": HTMLModusTableFillerColumnElement;
@@ -2804,6 +2839,10 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
+          * An event that fires on input blur.
+         */
+        "onInputBlur"?: (event: ModusSelectCustomEvent<FocusEvent>) => void;
+        /**
           * An event that fires on input value change.
          */
         "onValueChange"?: (event: ModusSelectCustomEvent<unknown>) => void;
@@ -2997,11 +3036,35 @@ declare namespace LocalJSX {
          */
         "onCellLinkClick"?: (event: ModusTableCustomEvent<ModusTableCellLink>) => void;
         /**
-          * Event details contains the row(s) selected
+          * Emits columns in the updated order
+         */
+        "onColumnOrderChange"?: (event: ModusTableCustomEvent<ModusTableColumnOrderState>) => void;
+        /**
+          * Emits latest column size
+         */
+        "onColumnSizingChange"?: (event: ModusTableCustomEvent<ModusTableColumnSizingState>) => void;
+        /**
+          * Emits visibility state of each column
+         */
+        "onColumnVisibilityChange"?: (event: ModusTableCustomEvent<ModusTableColumnVisibilityState>) => void;
+        /**
+          * Emits selected page index and size
+         */
+        "onPaginationChange"?: (event: ModusTableCustomEvent<ModusTablePaginationState>) => void;
+        /**
+          * Emits expanded state of the columns
+         */
+        "onRowExpanded"?: (event: ModusTableCustomEvent<ModusTableExpandedState>) => void;
+        /**
+          * Emits rows selected
          */
         "onRowSelectionChange"?: (event: ModusTableCustomEvent<unknown>) => void;
         /**
-          * Emits event on sort change
+          * Emits edited row data
+         */
+        "onRowUpdated"?: (event: ModusTableCustomEvent<unknown>) => void;
+        /**
+          * Emits column sort order
          */
         "onSortChange"?: (event: ModusTableCustomEvent<ModusTableSortingState>) => void;
         "pageSizeList"?: number[];
@@ -3039,6 +3102,19 @@ declare namespace LocalJSX {
          */
         "toolbarOptions"?: ModusTableToolbarOptions | null;
     }
+    interface ModusTableCellEditor {
+        "args"?: ModusTableCellEditorArgs;
+        "type"?: string;
+        "value"?: string;
+        "valueEntered"?: (newValue: string, oldValue: string) => void;
+    }
+    interface ModusTableCellMain {
+        "cell"?: Cell<unknown, unknown>;
+        "cellIndex"?: number;
+        "linkClick"?: (link: ModusTableCellLink) => void;
+        "rowActions"?: RowActions;
+        "valueChange"?: (props: ModusTableDataUpdaterProps) => void;
+    }
     interface ModusTableColumnsVisibility {
         /**
           * Column visibility options
@@ -3067,8 +3143,8 @@ declare namespace LocalJSX {
      */
     interface ModusTableFillerColumn {
         "cellBorderless"?: boolean;
+        "container"?: HTMLElement;
         "summaryRow"?: boolean;
-        "targetTable"?: HTMLTableElement;
     }
     interface ModusTableToolbar {
         /**
@@ -3417,6 +3493,8 @@ declare namespace LocalJSX {
         "modus-spinner": ModusSpinner;
         "modus-switch": ModusSwitch;
         "modus-table": ModusTable;
+        "modus-table-cell-editor": ModusTableCellEditor;
+        "modus-table-cell-main": ModusTableCellMain;
         "modus-table-columns-visibility": ModusTableColumnsVisibility;
         "modus-table-dropdown-menu": ModusTableDropdownMenu;
         "modus-table-filler-column": ModusTableFillerColumn;
@@ -3472,6 +3550,8 @@ declare module "@stencil/core" {
             "modus-spinner": LocalJSX.ModusSpinner & JSXBase.HTMLAttributes<HTMLModusSpinnerElement>;
             "modus-switch": LocalJSX.ModusSwitch & JSXBase.HTMLAttributes<HTMLModusSwitchElement>;
             "modus-table": LocalJSX.ModusTable & JSXBase.HTMLAttributes<HTMLModusTableElement>;
+            "modus-table-cell-editor": LocalJSX.ModusTableCellEditor & JSXBase.HTMLAttributes<HTMLModusTableCellEditorElement>;
+            "modus-table-cell-main": LocalJSX.ModusTableCellMain & JSXBase.HTMLAttributes<HTMLModusTableCellMainElement>;
             "modus-table-columns-visibility": LocalJSX.ModusTableColumnsVisibility & JSXBase.HTMLAttributes<HTMLModusTableColumnsVisibilityElement>;
             "modus-table-dropdown-menu": LocalJSX.ModusTableDropdownMenu & JSXBase.HTMLAttributes<HTMLModusTableDropdownMenuElement>;
             /**
